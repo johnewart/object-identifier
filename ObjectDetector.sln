@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectDetector", "ObjectDetector\ObjectDetector.csproj", "{6AC9E038-5362-499C-9C94-38690D15489D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectDetector.Tests", "ObjectDetector.Tests\ObjectDetector.Tests.csproj", "{CC07377B-139E-478E-BF32-6454FEE8B4AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6AC9E038-5362-499C-9C94-38690D15489D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AC9E038-5362-499C-9C94-38690D15489D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AC9E038-5362-499C-9C94-38690D15489D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AC9E038-5362-499C-9C94-38690D15489D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC07377B-139E-478E-BF32-6454FEE8B4AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC07377B-139E-478E-BF32-6454FEE8B4AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC07377B-139E-478E-BF32-6454FEE8B4AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC07377B-139E-478E-BF32-6454FEE8B4AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
