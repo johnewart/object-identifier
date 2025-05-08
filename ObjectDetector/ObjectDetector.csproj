@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <PackageReference Include="AnimatedGif" Version="1.0.5" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="ScottPlot" Version="5.0.55" />
     </ItemGroup>
 

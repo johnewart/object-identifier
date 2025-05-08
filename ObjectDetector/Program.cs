@@ -4,28 +4,48 @@ namespace ObjectDetector;
 
 public class Program
 {
-    public List<Frame> ReadFrames(string filePath)
-    {
-        using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        using var reader = new StreamReader(stream);
-        var json = reader.ReadToEnd();
-        return JsonSerializer.Deserialize<List<Frame>>(json);
-    }
-    
     public static void Main(string[] args)
     {
-        var dataDir = "/Users/johnewart/Projects/ObjectDetector/data";
+        string inputFilePath = null;
+        string outputFilePath = null;
+        string visualizationDir = null;
+
+        // Parse command-line arguments
+        for (int i = 0; i < args.Length; i++)
+        {
+            switch (args[i])
+            {
+                case "--input":
+                    inputFilePath = args[++i];
+                    break;
+                case "--output":
+                    outputFilePath = args[++i];
+                    break;
+                case "--vis-dir":
+                    visualizationDir = args[++i];
+                    break;
+                default:
+                    Console.WriteLine($"Unknown argument: {args[i]}");
+                    return;
+            }
+        }
         
+        // Validate arguments
+        if (string.IsNullOrEmpty(inputFilePath) || string.IsNullOrEmpty(outputFilePath) || string.IsNullOrEmpty(visualizationDir))
+        {
+            Console.WriteLine("Usage: --input <inputFilePath> --output <outputFilePath> --vis-dir <visualizationDir>");
+            return;
+        }
+
+        // Process frames
         var processor = new FrameProcessor(
-            Path.Combine(dataDir, "input"),
-            Path.Combine(dataDir, "output"),
-            Path.Combine(dataDir, "visualization")
+            inputFilePath,
+            outputFilePath,
+            visualizationDir
         );
-        
+
         var identifier = new ObjectIdentifier(0.05f, 5, distanceTolerance: 0.1f);
-        var runId = "run04";
-        var inputFileName = $"{runId}.json";
-        var result = processor.Process(inputFileName, identifier);
-        processor.GenerateVisualization(runId, result);
+        var result = processor.Process(identifier);
+        processor.GenerateVisualization(result);
     }
 }

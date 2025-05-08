@@ -1,26 +1,26 @@
-using System.Drawing;
 using System.Text.Json;
 using ScottPlot;
-using Color = ScottPlot.Color;
 
 namespace ObjectDetector;
 
-public class FrameProcessor(string inputFileDir, string outputFileDir, string visualizationFileDir)
+public class FrameProcessor(string inputFilePath, string outputFilePath, string visualizationFileDir)
 {
     public List<Frame> ReadFrames(string filePath)
     {
-        var fullPath = Path.Join(inputFileDir, filePath);
-        using var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read);
+        using var stream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
         using var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
-        return JsonSerializer.Deserialize<List<Frame>>(json) ?? [];
+        var frames = Serialization.Deserialize<List<Frame>>(json) 
+               ?? throw new InvalidOperationException("Failed to deserialize frames");
+        return frames;
     }
 
-    public List<Frame> Process(string filename, ObjectIdentifier identifier)
+    public List<Frame> Process(ObjectIdentifier identifier)
     {
-        var frames = ReadFrames(filename);
-        var outputFileName = filename.Replace(".json", "_output.json");
-        var outputFilePath = Path.Join(outputFileDir, outputFileName);
+        // Make sure the directory for output files exists
+        Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath) ?? string.Empty);
+        
+        var frames = ReadFrames(inputFilePath);
         var output = new List<Frame>();
 
         foreach (var frame in frames)
@@ -28,6 +28,7 @@ public class FrameProcessor(string inputFileDir, string outputFileDir, string vi
             var outputFrame = new Frame
             {
                 FrameId = frame.FrameId,
+                Timestamp = frame.Timestamp,
                 Detections = new List<Detection>()
             };
 
@@ -43,7 +44,7 @@ public class FrameProcessor(string inputFileDir, string outputFileDir, string vi
         }
 
         // Write the output to a file
-        var outputJson = JsonSerializer.Serialize(output);
+        var outputJson = Serialization.Serialize(output);
         using var outputStream = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
         using var writer = new StreamWriter(outputStream);
         writer.Write(outputJson);
@@ -54,31 +55,22 @@ public class FrameProcessor(string inputFileDir, string outputFileDir, string vi
         return output;
     }
 
-    public void GenerateVisualization(string directoryName, List<Frame> frames)
+    public void GenerateVisualization(List<Frame> frames)
     {
-        string[] vizcolors =
-        [
-            "#00429d", "#1d4da2", "#2c58a7", "#3963ac", "#446eb1", "#4f7ab6", "#5985bb", "#6391c0", "#6e9dc4",
-            "#78a8c9", "#83b4cd", "#8fc0d1", "#9bccd5", "#a8d8d9", "#b7e3dc", "#c8eedf", "#ddf8e1", "#ffffe0"
-        ];
-
         //var plotColors = vizcolors.Select(s => ScottPlot.Color.FromHex(s)).ToArray();
         var plotColors = new ScottPlot.Colormaps.Turbo()
             .GetColors(10)
             .ToArray();;
 
 
-        var visualizationOutputDir = Path.Join(visualizationFileDir, directoryName);
-        Directory.CreateDirectory(visualizationOutputDir);
-        var count = 0;
+        Directory.CreateDirectory(visualizationFileDir);
         List<string> filenames = new List<string>();
 
 
         foreach (var frame in frames)
         {
-            count += 1;
             var visualizationFileName = frame.FrameId.ToString().PadLeft(5, '0') + ".png";
-            var visualizationFilePath = Path.Join(visualizationOutputDir, visualizationFileName);
+            var visualizationFilePath = Path.Join(visualizationFileDir, visualizationFileName);
             filenames.Add(visualizationFileName);
 
             Plot framePlot = new();
@@ -91,23 +83,24 @@ public class FrameProcessor(string inputFileDir, string outputFileDir, string vi
                     detection.X + detection.Width,
                     detection.Y,
                     detection.Y + detection.Height);
+
                 var color = plotColors[detection.Id ?? 0 % plotColors.Length];
-                Console.WriteLine($"{detection.Id ?? -1} -> {color.ToHex()}");
-                rect.FillColor = color.WithOpacity(0.7);
+                rect.FillColor = color.WithOpacity(0.9);
                 rect.LineColor = Colors.Black;
                 rect.LineWidth = 1;
-
 
                 var txt = framePlot.Add.Text(detection.Id?.ToString() ?? "UFO", detection.X + .01, detection.Y);
                 txt.LabelAlignment = Alignment.LowerLeft;
                 txt.LabelFontSize = 12;
+                txt.LabelFontColor = Colors.White;
+                txt.LabelBold = true;
             }
 
             framePlot.SavePng(visualizationFilePath, 640, 480);
         }
 
         var visualizationHtml = VisualizationTemplate.GenerateVisualization(filenames);
-        var visualizationHtmlFilePath = Path.Join(visualizationOutputDir, "index.html");
+        var visualizationHtmlFilePath = Path.Join(visualizationFileDir, "index.html");
         using var visualizationHtmlStream =
             new FileStream(visualizationHtmlFilePath, FileMode.Create, FileAccess.Write);
         using var visualizationHtmlWriter = new StreamWriter(visualizationHtmlStream);

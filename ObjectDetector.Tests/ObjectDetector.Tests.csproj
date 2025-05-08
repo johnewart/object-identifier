@@ -22,4 +22,11 @@
       <ProjectReference Include="..\ObjectDetector\ObjectDetector.csproj" />
     </ItemGroup>
 
+
+    
+    <ItemGroup>
+        <Content Include="data/input/*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 </Project>
