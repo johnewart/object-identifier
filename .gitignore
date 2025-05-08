@@ -6,3 +6,5 @@ riderModule.iml
 /_ReSharper.Caches/
 .DS_Store
 *.DotSettings.*
+ObjectDetector.Tests/data/output/
+ObjectDetector.Tests/data/visualization/
