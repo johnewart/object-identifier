@@ -22,6 +22,25 @@ existing objects. If it is, it updates the existing object with the new informat
 During this, if the identifier believes two objects are the same, it looks to see how old the existing object is
 and will evict the older object if it has surpassed the frame threshold.
 
+
+## Example visualization
+
+### Example 1
+
+> Two objects, larger one disappears and returns within threshold
+
+![Two objects](https://github.com/johnewart/object-identifier/blob/main/docs/viz1/viz-001.png?raw=true)
+![Larger one disappears](https://github.com/johnewart/object-identifier/blob/main/docs/viz1/viz-002.png?raw=true)
+![Larger one returns within threshold](https://github.com/johnewart/object-identifier/blob/main/docs/viz1/viz-003.png?raw=true)
+
+### Example 2
+
+> Two objects, larger one disappears and returns outside threshold as a new object
+
+![Two objects](https://github.com/johnewart/object-identifier/blob/main/docs/viz2/001.png?raw=true)
+![Larger one disappears](https://github.com/johnewart/object-identifier/blob/main/docs/viz2/002.png?raw=true)
+![Larger one returns outside threshold](https://github.com/johnewart/object-identifier/blob/main/docs/viz2/003.png?raw=true)
+
 ## Usage
 
 1. Clone the repository
